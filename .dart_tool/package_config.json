@@ -1,0 +1,38 @@
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "lints",
+      "rootUri": "file:///Users/tminasen/.pub-cache/hosted/pub.dev/lints-6.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.8"
+    },
+    {
+      "name": "dart_rss_reader_workspace",
+      "rootUri": "../",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "shared",
+      "rootUri": "../packages/shared",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "server",
+      "rootUri": "../packages/server",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "web",
+      "rootUri": "../packages/web",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    }
+  ],
+  "generator": "pub",
+  "generatorVersion": "3.13.7",
+  "pubCache": "file:///Users/tminasen/.pub-cache"
+}

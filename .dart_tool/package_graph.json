@@ -1,0 +1,42 @@
+{
+  "roots": [
+    "dart_rss_reader_workspace",
+    "server",
+    "shared",
+    "web"
+  ],
+  "packages": [
+    {
+      "name": "dart_rss_reader_workspace",
+      "version": "0.0.0",
+      "dependencies": [],
+      "devDependencies": [
+        "lints"
+      ]
+    },
+    {
+      "name": "shared",
+      "version": "0.0.0",
+      "dependencies": [],
+      "devDependencies": []
+    },
+    {
+      "name": "server",
+      "version": "0.0.0",
+      "dependencies": [],
+      "devDependencies": []
+    },
+    {
+      "name": "web",
+      "version": "0.0.0",
+      "dependencies": [],
+      "devDependencies": []
+    },
+    {
+      "name": "lints",
+      "version": "6.1.0",
+      "dependencies": []
+    }
+  ],
+  "configVersion": 1
+}

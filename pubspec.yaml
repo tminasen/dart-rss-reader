@@ -1,0 +1,11 @@
+name: dart_rss_reader_workspace
+publish_to: none
+environment:
+  sdk: ^3.6.0
+workspace:
+  - packages/shared
+  - packages/server
+  - packages/web
+dev_dependencies:
+  lints: ^6.0.0
+
