@@ -14,7 +14,7 @@ Dart の [pub workspaces](https://dart.dev/tools/pub/workspaces) を使ったモ
 
 ## 必要な環境
 
-- Dart SDK 3.6.0 以上
+- Dart SDK 3.8.0 以上
 - Jaspr CLI（`dart pub global activate jaspr_cli`）
 
 ## セットアップ

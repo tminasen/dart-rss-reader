@@ -2,5 +2,5 @@ name: web
 publish_to: none
 resolution: workspace
 environment:
-  sdk: ^3.6.0
+  sdk: ^3.8.0
 
