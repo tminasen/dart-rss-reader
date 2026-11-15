@@ -3,4 +3,6 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: ^3.8.0
+dev_dependencies:
+  test: ^1.33.0
 
