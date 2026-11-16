@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>水無瀬のプログラミング日記feed</title>
+        <link>https://tminasen.dev</link>
+        <description>水無瀬のプログラミング日記のfeed</description>
+        <lastBuildDate>Mon, 13 Apr 2026 16:17:13 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>ja</language>
+        <image>
+            <title>水無瀬のプログラミング日記feed</title>
+            <url>https://tminasen.dev/images/ogp.png</url>
+            <link>https://tminasen.dev</link>
+        </image>
+        <copyright>All rights reserved 2026, tminasen</copyright>
+        <item>
+            <title><![CDATA[Angularを使ってボードゲームの得点計算ツールを作った話]]></title>
+            <link>https://tminasen.dev/blog/040a4af3-391e-4470-912e-4deca2cdcb2c</link>
+            <guid>https://tminasen.dev/blog/040a4af3-391e-4470-912e-4deca2cdcb2c</guid>
+            <pubDate>Tue, 14 Apr 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/040a4af3-391e-4470-912e-4deca2cdcb2c",
+  date: "2026/04/14",
+  title: "Angularを使ってボードゲームの得点計算ツールを作った話",
+  tag: ["Angu…]]></description>
+            <enclosure url="https://tminasen.dev/images/article/040a4af3-391e-4470-912e-4deca2cdcb2c/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[生成AIのコード品質とレビュー負担について考える]]></title>
+            <link>https://tminasen.dev/blog/e0e06c38-5dc7-4d6d-80ef-c50eba747552</link>
+            <guid>https://tminasen.dev/blog/e0e06c38-5dc7-4d6d-80ef-c50eba747552</guid>
+            <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/e0e06c38-5dc7-4d6d-80ef-c50eba747552",
+  date: "2026/04/08",
+  title: "生成AIのコード品質とレビュー負担について考える",
+  tag: ["生成AI"],
+  …]]></description>
+            <enclosure url="https://tminasen.dev/images/article/e0e06c38-5dc7-4d6d-80ef-c50eba747552/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[Figma MCP試してみる]]></title>
+            <link>https://tminasen.dev/blog/05c7d85f-018c-4b84-a2df-c2c61b887c14</link>
+            <guid>https://tminasen.dev/blog/05c7d85f-018c-4b84-a2df-c2c61b887c14</guid>
+            <pubDate>Mon, 24 Nov 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/05c7d85f-018c-4b84-a2df-c2c61b887c14",
+  date: "2025/11/24",
+  title: "Figma MCP試してみる",
+  tag: ["生成AI"],
+  ogpImage: …]]></description>
+            <enclosure url="https://tminasen.dev/images/article/05c7d85f-018c-4b84-a2df-c2c61b887c14/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[styled-componentsからTailwindCSSに移行する際に困ったこと]]></title>
+            <link>https://tminasen.dev/blog/eab71937-2e30-4b94-86ef-2655be02c38e</link>
+            <guid>https://tminasen.dev/blog/eab71937-2e30-4b94-86ef-2655be02c38e</guid>
+            <pubDate>Mon, 14 Apr 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/eab71937-2e30-4b94-86ef-2655be02c38e",
+  date: "2025/04/14",
+  title: "styled-componentsからTailwindCSSに移行する際に困ったこと",
+ …]]></description>
+            <enclosure url="https://tminasen.dev/images/article/eab71937-2e30-4b94-86ef-2655be02c38e/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[MCPについて調べてみる]]></title>
+            <link>https://tminasen.dev/blog/976f8b32-937c-4cb8-b6f5-6d5e62228750</link>
+            <guid>https://tminasen.dev/blog/976f8b32-937c-4cb8-b6f5-6d5e62228750</guid>
+            <pubDate>Fri, 11 Apr 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/976f8b32-937c-4cb8-b6f5-6d5e62228750",
+  date: "2025/04/11",
+  title: "MCPについて調べてみる",
+  tag: ["生成AI"],
+  ogpImage: "/…]]></description>
+            <enclosure url="https://tminasen.dev/images/article/976f8b32-937c-4cb8-b6f5-6d5e62228750/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[VSCode拡張機能「Cline」を試してみる]]></title>
+            <link>https://tminasen.dev/blog/64b0cd78-e933-463c-b3c3-5474a112ad05</link>
+            <guid>https://tminasen.dev/blog/64b0cd78-e933-463c-b3c3-5474a112ad05</guid>
+            <pubDate>Thu, 27 Feb 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/64b0cd78-e933-463c-b3c3-5474a112ad05",
+  date: "2025/02/27",
+  title: "VSCode拡張機能「Cline」を試してみる",
+  tag: ["VSCode","生成…]]></description>
+            <enclosure url="https://tminasen.dev/images/article/64b0cd78-e933-463c-b3c3-5474a112ad05/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[生成AIについて調べてみる]]></title>
+            <link>https://tminasen.dev/blog/4055d368bf410655f0363f255495d9</link>
+            <guid>https://tminasen.dev/blog/4055d368bf410655f0363f255495d9</guid>
+            <pubDate>Wed, 24 Apr 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/4055d368bf410655f0363f255495d9",
+  date: "2024/04/24",
+  title: "生成AIについて調べてみる",
+  tag: ["作業ログ"],
+  ogpImage: "/image…]]></description>
+            <enclosure url="https://tminasen.dev/images/article/4055d368bf410655f0363f255495d9/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[Next.jsでbetterなディレクトリ構成を考える]]></title>
+            <link>https://tminasen.dev/blog/1ba0f384ec9f09200bac8ef1a98542</link>
+            <guid>https://tminasen.dev/blog/1ba0f384ec9f09200bac8ef1a98542</guid>
+            <pubDate>Fri, 02 Dec 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/1ba0f384ec9f09200bac8ef1a98542",
+  date: "2022/12/02",
+  title: "Next.jsでbetterなディレクトリ構成を考える",
+  tag: ["Next.js"],
+  …]]></description>
+            <enclosure url="https://tminasen.dev/images/article/1ba0f384ec9f09200bac8ef1a98542/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[Tauriを試してみる]]></title>
+            <link>https://tminasen.dev/blog/49e96efeafa81d005101a61d382bf8</link>
+            <guid>https://tminasen.dev/blog/49e96efeafa81d005101a61d382bf8</guid>
+            <pubDate>Sun, 19 Jun 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/49e96efeafa81d005101a61d382bf8",
+  date: "2022/06/19",
+  title: "Tauriを試してみる",
+  tag: ["Rust","Angular"],
+  ogpImage:…]]></description>
+            <enclosure url="https://tminasen.dev/images/article/49e96efeafa81d005101a61d382bf8/ogp.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[Next.js+linariaを試してみる]]></title>
+            <link>https://tminasen.dev/blog/b33f8b2ef5e73ea3f219daff5952b3</link>
+            <guid>https://tminasen.dev/blog/b33f8b2ef5e73ea3f219daff5952b3</guid>
+            <pubDate>Sat, 18 Sep 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[path: "/blog/b33f8b2ef5e73ea3f219daff5952b3",
+  date: "2021/09/18",
+  title: "Next.js+linariaを試してみる",
+  tag: ["Next.js"],
+  ogpIma…]]></description>
+            <enclosure url="https://tminasen.dev/images/article/b33f8b2ef5e73ea3f219daff5952b3/ogp.png" length="0" type="image/png"/>
+        </item>
+    </channel>
+</rss>
