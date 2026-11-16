@@ -6,6 +6,7 @@ environment:
 dev_dependencies:
   test: ^1.33.0
 dependencies:
+  http: ^1.1.0
   shared: ^0.0.0
   shelf: ^1.4.3
   shelf_router: ^1.1.5
