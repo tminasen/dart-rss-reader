@@ -1,4 +1,5 @@
 import 'package:server/server.dart';
+import 'package:server/src/repository/in_memory_subscription_repository.dart';
 import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
 
@@ -13,7 +14,10 @@ void main() {
 
     test('should return 200 when GET /healthz is requested', () async {
       // Given: ログを抑止したハンドラ
-      final handler = buildHandler(logger: noopLogger);
+      final handler = buildHandler(
+        subscriptionRepository: InMemorySubscriptionRepository(),
+        logger: noopLogger,
+      );
 
       // When: GET /healthz を処理する
       final response = await handler(healthzRequest);
@@ -24,7 +28,10 @@ void main() {
 
     test('should return body ok when GET /healthz is requested', () async {
       // Given: ログを抑止したハンドラ
-      final handler = buildHandler(logger: noopLogger);
+      final handler = buildHandler(
+        subscriptionRepository: InMemorySubscriptionRepository(),
+        logger: noopLogger,
+      );
 
       // When: GET /healthz を処理する
       final response = await handler(healthzRequest);
@@ -35,7 +42,10 @@ void main() {
 
     test('should return 404 when an undefined path is requested', () async {
       // Given: ログを抑止したハンドラ
-      final handler = buildHandler(logger: noopLogger);
+      final handler = buildHandler(
+        subscriptionRepository: InMemorySubscriptionRepository(),
+        logger: noopLogger,
+      );
 
       // When: 未定義パスを処理する
       final response = await handler(
@@ -49,7 +59,10 @@ void main() {
     test('should log one non-error entry when a request is handled', () async {
       // Given: ログを記録するロガーを注入したハンドラ
       final logs = <(String, bool)>[];
-      final handler = buildHandler(logger: (m, e) => logs.add((m, e)));
+      final handler = buildHandler(
+        subscriptionRepository: InMemorySubscriptionRepository(),
+        logger: (m, e) => logs.add((m, e)),
+      );
 
       // When: GET /healthz を処理する
       await handler(healthzRequest);
