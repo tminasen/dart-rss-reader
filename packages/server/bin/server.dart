@@ -5,7 +5,9 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 
 Future<void> main() async {
   final server = await shelf_io.serve(
-    buildHandler(),
+    buildHandler(
+      subscriptionRepository: await createDefaultSubscriptionRepository(),
+    ),
     InternetAddress.loopbackIPv4,
     8080,
   );
