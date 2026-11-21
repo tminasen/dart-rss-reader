@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:server/server.dart';
+import 'package:server/src/repository/in_memory_article_repository.dart';
 import 'package:server/src/repository/in_memory_subscription_repository.dart';
 import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
@@ -20,6 +21,7 @@ void main() {
       await repo.updateFetched('1', feed: rssFeed, fetchedAt: fetchedAt1);
       final handler = buildHandler(
         subscriptionRepository: repo,
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -39,6 +41,7 @@ void main() {
         await repo.updateFetched('1', feed: rssFeed, fetchedAt: fetchedAt1);
         final handler = buildHandler(
           subscriptionRepository: repo,
+          articleRepository: InMemoryArticleRepository(),
           logger: noopLogger,
         );
 
@@ -57,6 +60,7 @@ void main() {
         final repo = InMemorySubscriptionRepository();
         final handler = buildHandler(
           subscriptionRepository: repo,
+          articleRepository: InMemoryArticleRepository(),
           logger: noopLogger,
         );
 
@@ -77,6 +81,7 @@ void main() {
       await repo.updateFetched('1', feed: rssFeed, fetchedAt: fetchedAt1);
       final handler = buildHandler(
         subscriptionRepository: repo,
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -103,6 +108,7 @@ void main() {
       await repo.add(feedUrlA);
       final handler = buildHandler(
         subscriptionRepository: repo,
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -132,6 +138,7 @@ void main() {
       await repo.updateFetched('2', feed: atomFeed, fetchedAt: fetchedAt2);
       final handler = buildHandler(
         subscriptionRepository: repo,
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -168,6 +175,7 @@ void main() {
       );
       final handler = buildHandler(
         subscriptionRepository: repo,
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -188,6 +196,7 @@ void main() {
       final repo = await createDefaultSubscriptionRepository();
       final handler = buildHandler(
         subscriptionRepository: repo,
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -222,6 +231,7 @@ void main() {
           }
           final handler = buildHandler(
             subscriptionRepository: repo,
+            articleRepository: InMemoryArticleRepository(),
             logger: noopLogger,
           );
 

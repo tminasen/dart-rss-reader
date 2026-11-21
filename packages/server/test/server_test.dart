@@ -1,4 +1,5 @@
 import 'package:server/server.dart';
+import 'package:server/src/repository/in_memory_article_repository.dart';
 import 'package:server/src/repository/in_memory_subscription_repository.dart';
 import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
@@ -16,6 +17,7 @@ void main() {
       // Given: ログを抑止したハンドラ
       final handler = buildHandler(
         subscriptionRepository: InMemorySubscriptionRepository(),
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -30,6 +32,7 @@ void main() {
       // Given: ログを抑止したハンドラ
       final handler = buildHandler(
         subscriptionRepository: InMemorySubscriptionRepository(),
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -44,6 +47,7 @@ void main() {
       // Given: ログを抑止したハンドラ
       final handler = buildHandler(
         subscriptionRepository: InMemorySubscriptionRepository(),
+        articleRepository: InMemoryArticleRepository(),
         logger: noopLogger,
       );
 
@@ -61,6 +65,7 @@ void main() {
       final logs = <(String, bool)>[];
       final handler = buildHandler(
         subscriptionRepository: InMemorySubscriptionRepository(),
+        articleRepository: InMemoryArticleRepository(),
         logger: (m, e) => logs.add((m, e)),
       );
 
