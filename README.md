@@ -14,8 +14,8 @@ Dart の [pub workspaces](https://dart.dev/tools/pub/workspaces) を使ったモ
 
 ## 必要な環境
 
-- Dart SDK 3.8.0 以上
-- Jaspr CLI（`dart pub global activate jaspr_cli`）
+- Dart SDK 3.13.0 以上 3.15.0 未満（jaspr 0.24.0-beta.2 と build_web_compilers 4.8.12 の SDK 制約による）
+- Jaspr CLI 0.24.0-beta.2（`dart pub global activate jaspr_cli 0.24.0-beta.2`）
 
 ## セットアップ
 
@@ -27,4 +27,35 @@ dart pub get
 
 ```sh
 dart analyze
+```
+
+## 起動方法
+
+server（8080 番）と web（8081 番）を別々のターミナルで起動します。
+
+```sh
+# server（http://localhost:8080）
+cd packages/server
+dart run bin/server.dart
+
+# web（http://localhost:8081）
+cd packages/web
+jaspr serve
+```
+
+- web の開発サーバーのポートは `packages/web/pubspec.yaml` の `jaspr.port` で 8081 にしています。
+- server は `http://localhost:8081` からのリクエストだけを CORS で許可します。
+- web が呼ぶ API の URL は、既定で `http://localhost:8080` です。変える場合は `--dart-define` で指定します。
+
+```sh
+jaspr serve --dart-define=API_BASE_URL=http://localhost:9000
+```
+
+- `jaspr serve` は標準入力が端末でないと止まります。バックグラウンドで動かすときは、標準入力を開いたままにしてください（例: `sleep 600 | script -q /dev/null jaspr serve`）。
+- server は起動時に記事を取得しないため、画面には「タイトル未取得」「最終取得 未取得 ・ 全0件」と表示されます。
+
+## テスト
+
+```sh
+bash tool/test_all.sh
 ```

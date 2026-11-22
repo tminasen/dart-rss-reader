@@ -9,6 +9,7 @@ Future<void> main() async {
     buildHandler(
       subscriptionRepository: await createDefaultSubscriptionRepository(),
       articleRepository: InMemoryArticleRepository(),
+      allowedOrigins: {'http://localhost:8081'},
     ),
     InternetAddress.loopbackIPv4,
     8080,
