@@ -1,6 +1,7 @@
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
+import 'src/articles_handler.dart';
 import 'src/cors_middleware.dart';
 import 'src/feeds_handler.dart';
 import 'src/repository/article_repository.dart';
@@ -19,7 +20,9 @@ Handler buildHandler({
 }) {
   final router = Router()
     ..get('/healthz', (Request request) => Response.ok('ok'))
-    ..get('/feeds', feedsHandler(subscriptionRepository, articleRepository));
+    ..get('/feeds', feedsHandler(subscriptionRepository, articleRepository))
+    ..get('/articles', listArticlesHandler(articleRepository))
+    ..patch('/articles/<id>', updateArticleHandler(articleRepository));
   return const Pipeline()
       .addMiddleware(logRequests(logger: logger))
       .addMiddleware(corsMiddleware(allowedOrigins: allowedOrigins))
