@@ -38,7 +38,7 @@ Handler listArticlesHandler(ArticleRepository repository) {
       offset: offset,
     );
     return _jsonResponse(200, {
-      'items': articles.map(_toJson).toList(),
+      'items': articles.map((stored) => stored.toJson()).toList(),
       'limit': limit,
       'offset': offset,
     });
@@ -65,16 +65,9 @@ Future<Response> Function(Request request, String id) updateArticleHandler(
     } on ArticleNotFoundException {
       return _errorResponse(404, 'article not found: $id');
     }
-    return _jsonResponse(200, _toJson(updated));
+    return _jsonResponse(200, updated.toJson());
   };
 }
-
-Map<String, Object?> _toJson(StoredArticle stored) => {
-  'id': stored.id,
-  'feedId': stored.feedId,
-  'isRead': stored.isRead,
-  'article': stored.article.toJson(),
-};
 
 Response _errorResponse(int statusCode, String message) =>
     _jsonResponse(statusCode, {'error': message});
