@@ -93,5 +93,26 @@ void main() {
       // Then: 等しくない
       expect(a == b, isFalse);
     });
+
+    test('should include id, feedId, isRead and article in toJson', () {
+      // Given: 記事1件
+      final stored = StoredArticle(
+        id: '1',
+        feedId: 'feed-1',
+        article: rss(1),
+        isRead: false,
+      );
+
+      // When: JSON に変換する
+      final json = stored.toJson();
+
+      // Then: id / feedId / isRead / article が入る
+      expect(json, {
+        'id': '1',
+        'feedId': 'feed-1',
+        'isRead': false,
+        'article': rss(1).toJson(),
+      });
+    });
   });
 }

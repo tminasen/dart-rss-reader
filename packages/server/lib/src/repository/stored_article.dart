@@ -14,6 +14,13 @@ final class StoredArticle {
   final Article article;
   final bool isRead;
 
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'feedId': feedId,
+    'isRead': isRead,
+    'article': article.toJson(),
+  };
+
   @override
   bool operator ==(Object other) =>
       other is StoredArticle &&

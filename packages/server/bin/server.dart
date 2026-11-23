@@ -32,6 +32,7 @@ Future<void> main() async {
     buildHandler(
       subscriptionRepository: repositories.subscriptions,
       articleRepository: repositories.articles,
+      newArticles: crawler.newArticles,
       allowedOrigins: {'http://localhost:8081'},
     ),
     InternetAddress.loopbackIPv4,
