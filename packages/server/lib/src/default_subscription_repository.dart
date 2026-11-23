@@ -3,9 +3,13 @@ import 'repository/subscription_repository.dart';
 
 const _defaultFeedUrl = 'https://tminasen.dev/rss/feed.xml';
 
-/// 起動時に固定URLを未取得状態で登録したインメモリのリポジトリを返す。
-Future<SubscriptionRepository> createDefaultSubscriptionRepository() async {
-  final repository = InMemorySubscriptionRepository();
-  await repository.add(_defaultFeedUrl);
-  return repository;
+/// 起動時に固定URLを未取得状態で登録したリポジトリを返す。
+/// [repository] を省略するとインメモリのリポジトリを使う。
+/// 登録済みの URL は重複して登録されない。
+Future<SubscriptionRepository> createDefaultSubscriptionRepository({
+  SubscriptionRepository? repository,
+}) async {
+  final target = repository ?? InMemorySubscriptionRepository();
+  await target.add(_defaultFeedUrl);
+  return target;
 }

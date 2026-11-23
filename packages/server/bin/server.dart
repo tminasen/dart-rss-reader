@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:server/server.dart';
-import 'package:server/src/repository/in_memory_article_repository.dart';
+import 'package:server/src/repositories.dart';
+import 'package:server/src/repository_config.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 Future<void> main() async {
+  final repositories = await openRepositories(
+    RepositoryConfig.fromEnvironment(Platform.environment),
+  );
   final server = await shelf_io.serve(
     buildHandler(
-      subscriptionRepository: await createDefaultSubscriptionRepository(),
-      articleRepository: InMemoryArticleRepository(),
+      subscriptionRepository: repositories.subscriptions,
+      articleRepository: repositories.articles,
       allowedOrigins: {'http://localhost:8081'},
     ),
     InternetAddress.loopbackIPv4,
