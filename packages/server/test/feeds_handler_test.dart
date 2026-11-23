@@ -197,7 +197,7 @@ void main() {
     test('should return the fixed feed URL when the default repository is '
         'used', () async {
       // Given: 既定リポジトリをつないだハンドラ
-      final repo = await createDefaultSubscriptionRepository();
+      final repo = await createDefaultSubscriptionRepository(feedUrl: feedUrlA);
       final handler = buildHandler(
         subscriptionRepository: repo,
         articleRepository: InMemoryArticleRepository(),
