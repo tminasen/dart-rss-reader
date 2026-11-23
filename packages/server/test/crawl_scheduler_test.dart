@@ -152,5 +152,71 @@ void main() {
       // Then: タイマーが止まる
       expect(timers.single.isActive, isFalse);
     });
+
+    // T19
+    test(
+      'should cancel timer immediately and wait for in-flight task when stopped',
+      () async {
+        // Given: 完了待ちの巡回タスクで開始済みのスケジューラー
+        final firstRun = Completer<void>();
+        task = () => firstRun.future;
+        final scheduler = newScheduler()..start();
+
+        // When: タスク実行中に stop() を呼び、その後タスクを完了させる
+        var stopCompleted = false;
+        final stopFuture = scheduler.stop().then((_) => stopCompleted = true);
+
+        // Then: 直後にタイマーは停止し、タスク完了前は stopFuture は未完了
+        expect(timers.single.isActive, isFalse);
+        await pumpEventQueue();
+        expect(stopCompleted, isFalse);
+
+        // When: 進行中タスクを完了する
+        firstRun.complete();
+        await stopFuture;
+
+        // Then: stopFuture が完了する
+        expect(stopCompleted, isTrue);
+      },
+    );
+
+    // T20
+    test(
+      'should complete stop without rethrowing when in-flight task fails',
+      () async {
+        // Given: 失敗予定の進行中タスクで開始済みのスケジューラー
+        final firstRun = Completer<void>();
+        task = () => firstRun.future;
+        final scheduler = newScheduler()..start();
+
+        // When: stop() 待機中に進行中タスクが例外を投げる
+        final stopFuture = scheduler.stop();
+        firstRun.completeError(StateError('aborted'));
+
+        // Then: stopFuture は正常完了し、errors に StateError が1件記録される
+        await expectLater(stopFuture, completes);
+        expect(errors, hasLength(1));
+        expect(errors.single, isA<StateError>());
+      },
+    );
+
+    // T21
+    test(
+      'should be idempotent on repeated stop and ignore subsequent timer ticks',
+      () async {
+        // Given: start() 後に stop() 済みのスケジューラー
+        final scheduler = newScheduler()..start();
+        await scheduler.stop();
+        expect(count, equals(1));
+
+        // When: 再度 stop() し、その後タイマーが発火する
+        await scheduler.stop();
+        timers.single.fire();
+        await pumpEventQueue();
+
+        // Then: 例外なく完了し、タスクは再実行されない
+        expect(count, equals(1));
+      },
+    );
   });
 }
