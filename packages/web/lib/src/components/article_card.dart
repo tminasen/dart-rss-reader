@@ -11,12 +11,16 @@ class ArticleCard extends StatelessComponent {
     required this.item,
     required this.onToggleRead,
     this.isUpdating = false,
+    this.isNew = false,
     super.key,
   });
 
   final ArticleItem item;
   final VoidCallback onToggleRead;
   final bool isUpdating;
+
+  /// 受信したばかりの新着として強調表示するか。
+  final bool isNew;
 
   @override
   Component build(BuildContext context) {
@@ -26,14 +30,14 @@ class ArticleCard extends StatelessComponent {
     final dateText = formatArticleDate(item.article);
 
     return article(
-      styles: const Styles(
-        backgroundColor: bgWhite,
-        border: Border.all(color: borderBlack, width: Unit.pixels(1)),
-        radius: BorderRadius.circular(Unit.pixels(8)),
-        padding: Padding.all(Unit.pixels(16)),
+      styles: Styles(
+        backgroundColor: isNew ? bgLightYellow : bgWhite,
+        border: const Border.all(color: borderBlack, width: Unit.pixels(1)),
+        radius: const BorderRadius.circular(Unit.pixels(8)),
+        padding: const Padding.all(Unit.pixels(16)),
         display: Display.flex,
         alignItems: AlignItems.center,
-        gap: Gap.all(Unit.pixels(16)),
+        gap: const Gap.all(Unit.pixels(16)),
       ),
       [
         _buildThumbnail(thumbnailUrl),
@@ -136,6 +140,22 @@ class ArticleCard extends StatelessComponent {
         alignItems: AlignItems.center,
       ),
       [
+        if (isNew)
+          span(
+            styles: const Styles(
+              backgroundColor: bgBlack,
+              radius: BorderRadius.circular(Unit.pixels(999)),
+              padding: Padding.symmetric(
+                vertical: Unit.pixels(2),
+                horizontal: Unit.pixels(10),
+              ),
+              fontSize: Unit.pixels(11),
+              fontWeight: FontWeight.bold,
+              color: textWhite,
+              lineHeight: lineHeightBase,
+            ),
+            [Component.text('NEW')],
+          ),
         if (!item.isRead)
           span(
             styles: const Styles(

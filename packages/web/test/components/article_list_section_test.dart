@@ -5,6 +5,7 @@ import 'package:jaspr_test/jaspr_test.dart';
 import 'package:shared/shared.dart';
 import 'package:web_app/src/api/api_exception.dart';
 import 'package:web_app/src/components/article_list_section.dart';
+import 'package:web_app/src/components/article_card.dart';
 import 'package:web_app/src/components/filter_tabs.dart';
 
 final rssArticleA = RssArticle(
@@ -53,6 +54,36 @@ final unreadItemC = ArticleItem(
   isRead: false,
   article: atomArticleA,
 );
+
+final newItem = ArticleItem(
+  id: 'n-1',
+  feedId: 'f-1',
+  isRead: false,
+  article: RssArticle(
+    title: '新着記事のタイトル',
+    link: 'https://tminasen.dev/blog/new',
+    pubDate: DateTime(2026, 11, 15),
+    enclosure: null,
+  ),
+);
+
+final newItem2 = ArticleItem(
+  id: 'n-2',
+  feedId: 'f-1',
+  isRead: false,
+  article: RssArticle(
+    title: '新着記事その2',
+    link: 'https://tminasen.dev/blog/new2',
+    pubDate: DateTime(2026, 11, 16),
+    enclosure: null,
+  ),
+);
+
+/// 描画されている ArticleCard を表示順に返す。
+List<ArticleCard> renderedCards() => [
+  for (final element in find.byType(ArticleCard).evaluate())
+    element.component as ArticleCard,
+];
 
 Future<ArticleItem> unusedUpdate(String id, {required bool isRead}) async {
   throw UnimplementedError();
@@ -567,5 +598,351 @@ void main() {
         expect(find.text('未読に戻す'), findsNothing);
       },
     );
+
+    group('new articles', () {
+      Future<List<ArticleItem>> loadThree() async => [
+        unreadItemA,
+        readItemB,
+        unreadItemC,
+      ];
+
+      testComponents('should prepend received article as NEW card at the top', (
+        tester,
+      ) async {
+        // Given: 3件をロード済みで、新着ストリームを渡した ArticleListSection
+        final controller = StreamController<ArticleItem>.broadcast();
+        addTearDown(controller.close);
+        tester.pumpComponent(
+          ArticleListSection(
+            loadArticles: loadThree,
+            updateArticleRead: unusedUpdate,
+            newArticles: controller.stream,
+          ),
+        );
+        await tester.pump();
+
+        // When: 新着を1件受信する
+        controller.add(newItem);
+        await tester.pump();
+
+        // Then: 先頭に NEW の newItem があり、以降は既存の記事で NEW ではない
+        final cards = renderedCards();
+        expect(cards.map((c) => c.item).toList(), [
+          newItem,
+          unreadItemA,
+          readItemB,
+          unreadItemC,
+        ]);
+        expect(cards.map((c) => c.isNew).toList(), [true, false, false, false]);
+      });
+
+      testComponents(
+        'should show banner with count when one article is received',
+        (tester) async {
+          // Given: 3件をロード済みで、新着ストリームを渡した ArticleListSection
+          final controller = StreamController<ArticleItem>.broadcast();
+          addTearDown(controller.close);
+          tester.pumpComponent(
+            ArticleListSection(
+              loadArticles: loadThree,
+              updateArticleRead: unusedUpdate,
+              newArticles: controller.stream,
+            ),
+          );
+          await tester.pump();
+
+          // When: 新着を1件受信する
+          controller.add(newItem);
+          await tester.pump();
+
+          // Then: バナーに「新着記事を1件受信しました」が表示される
+          expect(find.text('新着記事を1件受信しました'), findsOneComponent);
+        },
+      );
+
+      testComponents(
+        'should put the later article first and show banner count 2 when two are received',
+        (tester) async {
+          // Given: 3件をロード済みで、新着ストリームを渡した ArticleListSection
+          final controller = StreamController<ArticleItem>.broadcast();
+          addTearDown(controller.close);
+          tester.pumpComponent(
+            ArticleListSection(
+              loadArticles: loadThree,
+              updateArticleRead: unusedUpdate,
+              newArticles: controller.stream,
+            ),
+          );
+          await tester.pump();
+
+          // When: 新着を2件、順に受信する
+          controller.add(newItem);
+          await tester.pump();
+          controller.add(newItem2);
+          await tester.pump();
+
+          // Then: 後から来た記事が先頭で、バナーは2件になる
+          expect(renderedCards().map((c) => c.item).toList(), [
+            newItem2,
+            newItem,
+            unreadItemA,
+            readItemB,
+            unreadItemC,
+          ]);
+          expect(find.text('新着記事を2件受信しました'), findsOneComponent);
+        },
+      );
+
+      testComponents(
+        'should update FilterTabs counts when an article is received',
+        (tester) async {
+          // Given: 3件（未読2件）をロード済みで、新着ストリームを渡した ArticleListSection
+          final controller = StreamController<ArticleItem>.broadcast();
+          addTearDown(controller.close);
+          tester.pumpComponent(
+            ArticleListSection(
+              loadArticles: loadThree,
+              updateArticleRead: unusedUpdate,
+              newArticles: controller.stream,
+            ),
+          );
+          await tester.pump();
+
+          // When: 未読の新着を1件受信する
+          controller.add(newItem);
+          await tester.pump();
+
+          // Then: FilterTabs の件数が すべて 4 / 未読 3 になる
+          final tabs =
+              find.byType(FilterTabs).evaluate().single.component as FilterTabs;
+          expect(tabs.allCount, equals(4));
+          expect(tabs.unreadCount, equals(3));
+        },
+      );
+
+      testComponents(
+        'should not show banner or NEW cards when nothing is received',
+        (tester) async {
+          // Given: 3件をロード済みで、新着ストリームを渡した ArticleListSection
+          final controller = StreamController<ArticleItem>.broadcast();
+          addTearDown(controller.close);
+
+          // When: 描画して読み込みを待つ（受信しない）
+          tester.pumpComponent(
+            ArticleListSection(
+              loadArticles: loadThree,
+              updateArticleRead: unusedUpdate,
+              newArticles: controller.stream,
+            ),
+          );
+          await tester.pump();
+
+          // Then: バナーは表示されず、NEW のカードもない
+          expect(find.text('新着記事を0件受信しました'), findsNothing);
+          expect(renderedCards().where((c) => c.isNew), isEmpty);
+        },
+      );
+
+      testComponents(
+        'should neither add nor count an article whose id is already listed',
+        (tester) async {
+          // Given: 3件をロード済みで、新着ストリームを渡した ArticleListSection
+          final controller = StreamController<ArticleItem>.broadcast();
+          addTearDown(controller.close);
+          tester.pumpComponent(
+            ArticleListSection(
+              loadArticles: loadThree,
+              updateArticleRead: unusedUpdate,
+              newArticles: controller.stream,
+            ),
+          );
+          await tester.pump();
+
+          // When: 一覧にある id の記事を受信する
+          controller.add(unreadItemA);
+          await tester.pump();
+
+          // Then: 一覧は3件のままで、NEW もバナーもない
+          expect(renderedCards().map((c) => c.item).toList(), [
+            unreadItemA,
+            readItemB,
+            unreadItemC,
+          ]);
+          expect(renderedCards().where((c) => c.isNew), isEmpty);
+          expect(find.text('新着記事を1件受信しました'), findsNothing);
+        },
+      );
+
+      testComponents(
+        'should prepend an article received during the initial load after it completes',
+        (tester) async {
+          // Given: 読み込みが未完了の ArticleListSection
+          final completer = Completer<List<ArticleItem>>();
+          final controller = StreamController<ArticleItem>.broadcast();
+          addTearDown(controller.close);
+          tester.pumpComponent(
+            ArticleListSection(
+              loadArticles: () => completer.future,
+              updateArticleRead: unusedUpdate,
+              newArticles: controller.stream,
+            ),
+          );
+
+          // When: 読み込み中に新着を受信し、その後で読み込みが完了する
+          controller.add(newItem);
+          await tester.pump();
+          completer.complete([unreadItemA]);
+          await tester.pump();
+
+          // Then: 新着が NEW として先頭に加わり、バナーは1件になる
+          final cards = renderedCards();
+          expect(cards.map((c) => c.item).toList(), [newItem, unreadItemA]);
+          expect(cards.first.isNew, isTrue);
+          expect(find.text('新着記事を1件受信しました'), findsOneComponent);
+        },
+      );
+
+      testComponents('should keep NEW on a card after it is marked as read', (
+        tester,
+      ) async {
+        // Given: 新着を1件受信済みの ArticleListSection
+        final controller = StreamController<ArticleItem>.broadcast();
+        addTearDown(controller.close);
+        Future<ArticleItem> updateRead(
+          String id, {
+          required bool isRead,
+        }) async {
+          return ArticleItem(
+            id: newItem.id,
+            feedId: newItem.feedId,
+            isRead: true,
+            article: newItem.article,
+          );
+        }
+
+        tester.pumpComponent(
+          ArticleListSection(
+            loadArticles: loadThree,
+            updateArticleRead: updateRead,
+            newArticles: controller.stream,
+          ),
+        );
+        await tester.pump();
+        controller.add(newItem);
+        await tester.pump();
+
+        // When: 先頭カードの「既読にする」を押す
+        await tester.click(toggleButtonForTitle('新着記事のタイトル'));
+        await tester.pump();
+
+        // Then: 先頭カードは既読になり、NEW のまま
+        final first = renderedCards().first;
+        expect(first.item.id, equals(newItem.id));
+        expect(first.item.isRead, isTrue);
+        expect(first.isNew, isTrue);
+      });
+
+      testComponents(
+        'should keep an article received while refetching after the refetch completes',
+        (tester) async {
+          // Given: 読み込み済みで、既読更新の失敗後に「再試行」で再取得中の ArticleListSection
+          final controller = StreamController<ArticleItem>.broadcast();
+          addTearDown(controller.close);
+          final refetch = Completer<List<ArticleItem>>();
+          var calls = 0;
+          Future<List<ArticleItem>> loadArticles() {
+            calls++;
+            return calls == 1 ? Future.value([unreadItemA]) : refetch.future;
+          }
+
+          Future<ArticleItem> failingUpdate(
+            String id, {
+            required bool isRead,
+          }) async {
+            throw const ApiConnectionException('connection refused');
+          }
+
+          tester.pumpComponent(
+            ArticleListSection(
+              loadArticles: loadArticles,
+              updateArticleRead: failingUpdate,
+              newArticles: controller.stream,
+            ),
+          );
+          await tester.pump();
+          await tester.click(
+            toggleButtonForTitle('Angularを使ってボードゲームの得点計算ツールを作った話'),
+          );
+          await tester.pump();
+          await tester.click(buttonWithText('再試行'));
+
+          // When: 再取得中に新着を受信し、古いスナップショットで再取得が完了する
+          controller.add(newItem);
+          await tester.pump();
+          refetch.complete([unreadItemA]);
+          await tester.pump();
+
+          // Then: 新着は失われず、NEW として先頭に残る
+          final cards = renderedCards();
+          expect(cards.map((c) => c.item).toList(), [newItem, unreadItemA]);
+          expect(cards.first.isNew, isTrue);
+          expect(find.text('新着記事を1件受信しました'), findsOneComponent);
+        },
+      );
+
+      testComponents(
+        'should keep an article received while refetching when the refetch fails',
+        (tester) async {
+          // Given: 読み込み済みで、既読更新の失敗後に「再試行」で再取得中の ArticleListSection
+          final controller = StreamController<ArticleItem>.broadcast();
+          addTearDown(controller.close);
+          final refetch = Completer<List<ArticleItem>>();
+          var calls = 0;
+          Future<List<ArticleItem>> loadArticles() {
+            calls++;
+            return calls == 1 ? Future.value([unreadItemA]) : refetch.future;
+          }
+
+          Future<ArticleItem> failingUpdate(
+            String id, {
+            required bool isRead,
+          }) async {
+            throw const ApiConnectionException('connection refused');
+          }
+
+          tester.pumpComponent(
+            ArticleListSection(
+              loadArticles: loadArticles,
+              updateArticleRead: failingUpdate,
+              newArticles: controller.stream,
+            ),
+          );
+          await tester.pump();
+          await tester.click(
+            toggleButtonForTitle('Angularを使ってボードゲームの得点計算ツールを作った話'),
+          );
+          await tester.pump();
+          await tester.click(buttonWithText('再試行'));
+
+          // When: 再取得中に新着を受信し、その後で再取得が失敗する
+          controller.add(newItem);
+          await tester.pump();
+          refetch.completeError(
+            const ApiConnectionException('connection refused'),
+          );
+          await tester.pump();
+
+          // Then: 前回の一覧を残したまま、新着が NEW として先頭に加わる
+          final cards = renderedCards();
+          expect(cards.map((c) => c.item).toList(), [newItem, unreadItemA]);
+          expect(cards.first.isNew, isTrue);
+          expect(find.text('新着記事を1件受信しました'), findsOneComponent);
+          expect(
+            find.text('フィードを取得できませんでした。前回取得した記事を表示しています。'),
+            findsOneComponent,
+          );
+        },
+      );
+    });
   });
 }

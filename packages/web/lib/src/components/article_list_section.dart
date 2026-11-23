@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:shared/shared.dart';
@@ -12,12 +14,16 @@ class ArticleListSection extends StatefulComponent {
   const ArticleListSection({
     required this.loadArticles,
     required this.updateArticleRead,
+    this.newArticles,
     super.key,
   });
 
   final Future<List<ArticleItem>> Function() loadArticles;
   final Future<ArticleItem> Function(String id, {required bool isRead})
   updateArticleRead;
+
+  /// 受信した新着記事のストリーム。省略時は新着を扱わない。
+  final Stream<ArticleItem>? newArticles;
 
   @override
   State<ArticleListSection> createState() => _ArticleListSectionState();
@@ -30,11 +36,59 @@ class _ArticleListSectionState extends State<ArticleListSection> {
   final Map<String, ArticleItem> _overridesDuringLoad = {};
   bool _isLoading = true;
   String? _errorMessage;
+  final Set<String> _newIds = {};
+  final List<ArticleItem> _pendingNew = [];
+  int _receivedCount = 0;
+  StreamSubscription<ArticleItem>? _newArticlesSubscription;
 
   @override
   void initState() {
     super.initState();
+    _newArticlesSubscription = component.newArticles?.listen(_onNewArticle);
     _load();
+  }
+
+  @override
+  void dispose() {
+    _newArticlesSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _onNewArticle(ArticleItem item) {
+    if (!mounted) return;
+    if (_isLoading) {
+      // 読み込みの結果で一覧が置き換わるため、完了後にまとめて反映する。
+      _pendingNew.add(item);
+      return;
+    }
+    final articles = _articles;
+    if (articles == null) return;
+    setState(() {
+      _articles = _withNewArticle(articles, item);
+    });
+  }
+
+  /// 一覧にない [item] を NEW として先頭に加え、受信件数に数える。
+  List<ArticleItem> _withNewArticle(
+    List<ArticleItem> articles,
+    ArticleItem item,
+  ) {
+    final updated = prependIfAbsent(articles, item);
+    if (updated.length != articles.length) {
+      _newIds.add(item.id);
+      _receivedCount++;
+    }
+    return updated;
+  }
+
+  /// 読み込み中に受信した新着を [articles] の先頭へ反映する。
+  List<ArticleItem> _withPendingNewArticles(List<ArticleItem> articles) {
+    var result = articles;
+    for (final item in _pendingNew) {
+      result = _withNewArticle(result, item);
+    }
+    _pendingNew.clear();
+    return result;
   }
 
   void _retry() {
@@ -52,9 +106,9 @@ class _ArticleListSectionState extends State<ArticleListSection> {
       final fetched = await component.loadArticles();
       if (!mounted) return;
       setState(() {
-        _articles = [
+        _articles = _withPendingNewArticles([
           for (final item in fetched) _overridesDuringLoad[item.id] ?? item,
-        ];
+        ]);
         _overridesDuringLoad.clear();
         _isLoading = false;
         _errorMessage = null;
@@ -62,6 +116,10 @@ class _ArticleListSectionState extends State<ArticleListSection> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
+        final articles = _articles;
+        if (articles != null) {
+          _articles = _withPendingNewArticles(articles);
+        }
         _overridesDuringLoad.clear();
         _isLoading = false;
         _errorMessage = _articles == null
@@ -148,6 +206,7 @@ class _ArticleListSectionState extends State<ArticleListSection> {
             });
           },
         ),
+        if (_receivedCount > 0) _NewArticlesBanner(count: _receivedCount),
         if (articles.isEmpty)
           const _EmptyState(
             heading: '記事がありません',
@@ -168,10 +227,44 @@ class _ArticleListSectionState extends State<ArticleListSection> {
                   key: ValueKey<String>(item.id),
                   item: item,
                   isUpdating: _updatingIds.contains(item.id),
+                  isNew: _newIds.contains(item.id),
                   onToggleRead: () => _toggleRead(item),
                 ),
             ],
           ),
+      ],
+    );
+  }
+}
+
+class _NewArticlesBanner extends StatelessComponent {
+  const _NewArticlesBanner({required this.count});
+
+  final int count;
+
+  @override
+  Component build(BuildContext context) {
+    return div(
+      styles: const Styles(
+        backgroundColor: bgLightYellow,
+        border: Border.all(color: borderBlack, width: Unit.pixels(1)),
+        radius: BorderRadius.circular(Unit.pixels(8)),
+        padding: Padding.symmetric(
+          vertical: Unit.pixels(12),
+          horizontal: Unit.pixels(16),
+        ),
+      ),
+      [
+        p(
+          styles: const Styles(
+            margin: Margin.zero,
+            fontSize: Unit.pixels(14),
+            fontWeight: FontWeight.w500,
+            color: textBlack,
+            lineHeight: lineHeightBase,
+          ),
+          [Component.text('新着記事を$count件受信しました')],
+        ),
       ],
     );
   }
