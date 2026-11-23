@@ -10,6 +10,9 @@ const bgBlack = Color('#333333');
 const bgGray = Color('#EBECF0');
 const bgBlue = Color('#448AFF');
 const bgRed = Color('#EB5757');
+const bgGreen = Color('#27AE60');
+const bgYellow = Color('#F2C94C');
+const bgLightYellow = Color('#F5D67A');
 const borderBlack = Color('#333333');
 
 const notoSansJp = FontFamily.list([

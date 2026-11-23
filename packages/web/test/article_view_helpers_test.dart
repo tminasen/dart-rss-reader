@@ -373,4 +373,85 @@ void main() {
       }
     });
   });
+
+  group('prependIfAbsent', () {
+    final newRssArticle = RssArticle(
+      title: '新着記事のタイトル',
+      link: 'https://tminasen.dev/blog/new',
+      pubDate: DateTime(2026, 11, 15),
+      enclosure: null,
+    );
+    final newItem = ArticleItem(
+      id: 'n-1',
+      feedId: 'f-1',
+      isRead: false,
+      article: newRssArticle,
+    );
+
+    test('should prepend item when id is not in list', () {
+      // Given: newItem を含まない [unreadItemA, readItemB]
+      final list = [unreadItemA, readItemB];
+
+      // When: prependIfAbsent を呼ぶ
+      final result = prependIfAbsent(list, newItem);
+
+      // Then: newItem が先頭に加わったリストが返る
+      expect(result, equals([newItem, unreadItemA, readItemB]));
+    });
+
+    test('should return unchanged list when same id already exists', () {
+      // Given: unreadItemA と同じ id で isRead: true の項目
+      final list = [unreadItemA, readItemB];
+      final duplicate = ArticleItem(
+        id: unreadItemA.id,
+        feedId: unreadItemA.feedId,
+        isRead: true,
+        article: unreadItemA.article,
+      );
+
+      // When: prependIfAbsent を呼ぶ
+      final result = prependIfAbsent(list, duplicate);
+
+      // Then: 既存の unreadItemA を置き換えず、リストは変わらない
+      expect(result, equals([unreadItemA, readItemB]));
+    });
+
+    group('invariants', () {
+      // 入力ドメイン: list は id a-1〜a-5 から重複なく選んだ 0〜5 件、
+      // item は id a-1〜a-6 のいずれか。固定シードで list の選び方を変えた複数ケースを使う。
+      ArticleItem itemWithId(int n) => ArticleItem(
+        id: 'a-$n',
+        feedId: 'f-1',
+        isRead: n.isEven,
+        article: rssArticleA,
+      );
+
+      final random = Random(42);
+      final cases = <(List<ArticleItem>, ArticleItem)>[];
+      for (var length = 0; length <= 5; length++) {
+        for (var itemId = 1; itemId <= 6; itemId++) {
+          final ids = [1, 2, 3, 4, 5]..shuffle(random);
+          cases.add((
+            [for (final n in ids.take(length)) itemWithId(n)],
+            itemWithId(itemId),
+          ));
+        }
+      }
+
+      for (final (index, (list, item)) in cases.indexed) {
+        test('should be idempotent and keep ids unique for case $index', () {
+          // Given: 入力ドメインから作った list と item
+
+          // When: 1回と2回続けて prependIfAbsent を適用する
+          final once = prependIfAbsent(list, item);
+          final twice = prependIfAbsent(once, item);
+
+          // Then: 2回適用しても結果は同じで、id は重複せず、件数は高々1件増える
+          expect(twice, equals(once));
+          expect(once.map((e) => e.id).toSet().length, equals(once.length));
+          expect(once.length, inInclusiveRange(list.length, list.length + 1));
+        });
+      }
+    });
+  });
 }

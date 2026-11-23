@@ -68,3 +68,16 @@ List<ArticleItem> filterArticles(
 /// 未読記事の件数を返す。
 int countUnread(List<ArticleItem> articles) =>
     articles.where((item) => !item.isRead).length;
+
+/// [articles] に同じ id の記事がなければ、[item] を先頭に加えたリストを返す。
+///
+/// 既にある場合は既存の記事を置き換えず、そのままのリストを返す。
+List<ArticleItem> prependIfAbsent(
+  List<ArticleItem> articles,
+  ArticleItem item,
+) {
+  if (articles.any((current) => current.id == item.id)) {
+    return List<ArticleItem>.of(articles);
+  }
+  return [item, ...articles];
+}

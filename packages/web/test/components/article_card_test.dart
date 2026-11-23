@@ -35,6 +35,32 @@ final readItemB = ArticleItem(
   article: rssArticleB,
 );
 
+final newItem = ArticleItem(
+  id: 'n-1',
+  feedId: 'f-1',
+  isRead: false,
+  article: RssArticle(
+    title: '新着記事のタイトル',
+    link: 'https://tminasen.dev/blog/new',
+    pubDate: DateTime(2026, 11, 15),
+    enclosure: null,
+  ),
+);
+
+/// 描画された article 要素の background-color を返す。
+String? articleBackgroundColor() {
+  final component =
+      find
+              .byComponentPredicate(
+                (c) => c is DomComponent && c.tag == 'article',
+              )
+              .evaluate()
+              .single
+              .component
+          as DomComponent;
+  return component.styles?.properties['background-color'];
+}
+
 void main() {
   group('ArticleCard', () {
     // T31
@@ -219,6 +245,36 @@ void main() {
           findsOneComponent,
         );
         expect(count, equals(0));
+      },
+    );
+
+    testComponents(
+      'should render NEW badge and light yellow background when isNew is true',
+      (tester) async {
+        // Given: isNew: true の ArticleCard
+
+        // When: 描画する
+        tester.pumpComponent(
+          ArticleCard(item: newItem, onToggleRead: () {}, isNew: true),
+        );
+
+        // Then: NEW バッジが1件で、article の背景が薄黄（#F5D67A）
+        expect(find.text('NEW'), findsOneComponent);
+        expect(articleBackgroundColor(), equals('#F5D67A'));
+      },
+    );
+
+    testComponents(
+      'should not render NEW badge and keep white background when isNew is omitted',
+      (tester) async {
+        // Given: isNew を省略した ArticleCard
+
+        // When: 描画する
+        tester.pumpComponent(ArticleCard(item: newItem, onToggleRead: () {}));
+
+        // Then: NEW バッジはなく、article の背景は白（#FFFFFF）
+        expect(find.text('NEW'), findsNothing);
+        expect(articleBackgroundColor(), equals('#FFFFFF'));
       },
     );
   });
