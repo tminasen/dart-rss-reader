@@ -19,24 +19,33 @@ final class CrawlScheduler {
   final Timer Function(Duration, void Function(Timer)) _createTimer;
   final void Function(Object error, StackTrace stackTrace)? _onError;
   Timer? _timer;
-  bool _running = false;
+  Future<void>? _currentRun;
+  bool _stopped = false;
 
   void start() {
+    _stopped = false;
     _timer = _createTimer(_interval, (_) => _run());
     _run();
   }
 
-  void stop() => _timer?.cancel();
+  /// タイマーを直ちに停止し、進行中の実行があれば完了まで待つ。
+  Future<void> stop() async {
+    _stopped = true;
+    _timer?.cancel();
+    await _currentRun;
+  }
 
   Future<void> _run() async {
-    if (_running) return;
-    _running = true;
+    if (_stopped || _currentRun != null) return;
+    final completer = Completer<void>();
+    _currentRun = completer.future;
     try {
       await _task();
     } on Object catch (error, stackTrace) {
       _onError?.call(error, stackTrace);
     } finally {
-      _running = false;
+      _currentRun = null;
+      completer.complete();
     }
   }
 }
