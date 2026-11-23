@@ -14,14 +14,17 @@ const otherOrigin = 'http://evil.example';
 void main() {
   group('CORS middleware', () {
     final feedsUri = Uri.parse('http://localhost/feeds');
+    final articleUri = Uri.parse('http://localhost/articles/1');
     late InMemorySubscriptionRepository subRepo;
+    late InMemoryArticleRepository articleRepo;
     late Handler handler;
 
     setUp(() {
       subRepo = InMemorySubscriptionRepository();
+      articleRepo = InMemoryArticleRepository();
       handler = buildHandler(
         subscriptionRepository: subRepo,
-        articleRepository: InMemoryArticleRepository(),
+        articleRepository: articleRepo,
         allowedOrigins: {allowedOrigin},
         logger: noopLogger,
       );
@@ -49,29 +52,67 @@ void main() {
     );
 
     test(
-      'should respond 204 when preflight comes from an allowed origin',
+      'should add CORS headers when PATCH comes from an allowed origin',
       () async {
-        // Given: 許可オリジンからのプリフライト
+        // Given: 記事 '1' が登録されており、許可オリジンからの PATCH リクエスト
+        await articleRepo.addAll('1', [rss(1)]);
 
-        // When: OPTIONS /feeds を処理する
+        // When: PATCH /articles/1 を処理する
+        final response = await handler(
+          Request(
+            'PATCH',
+            articleUri,
+            headers: {
+              'origin': allowedOrigin,
+              'content-type': 'application/json',
+            },
+            body: '{"isRead":true}',
+          ),
+        );
+
+        // Then: 200 で、access-control-allow-origin と vary: Origin が付く
+        expect(response.statusCode, equals(200));
+        expect(
+          response.headers['access-control-allow-origin'],
+          equals(allowedOrigin),
+        );
+        expect(response.headers['vary'], equals('Origin'));
+      },
+    );
+
+    test(
+      'should respond 204 with GET, PATCH and Content-Type when preflight comes from an allowed origin',
+      () async {
+        // Given: 許可オリジンからの PATCH + Content-Type プリフライト
+
+        // When: OPTIONS /articles/1 を処理する
         final response = await handler(
           Request(
             'OPTIONS',
-            feedsUri,
+            articleUri,
             headers: {
               'origin': allowedOrigin,
-              'access-control-request-method': 'GET',
+              'access-control-request-method': 'PATCH',
+              'access-control-request-headers': 'content-type',
             },
           ),
         );
 
-        // Then: 204 で、許可オリジンと許可メソッド GET が返る
+        // Then: 204 で、許可オリジン・GET, PATCH・Content-Type・vary: Origin が返る
         expect(response.statusCode, equals(204));
         expect(
           response.headers['access-control-allow-origin'],
-          equals('http://localhost:8081'),
+          equals(allowedOrigin),
         );
-        expect(response.headers['access-control-allow-methods'], equals('GET'));
+        expect(
+          response.headers['access-control-allow-methods'],
+          equals('GET, PATCH'),
+        );
+        expect(
+          response.headers['access-control-allow-headers'],
+          equals('Content-Type'),
+        );
+        expect(response.headers['vary'], equals('Origin'));
       },
     );
 

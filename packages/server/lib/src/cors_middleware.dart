@@ -2,7 +2,8 @@ import 'package:shelf/shelf.dart';
 
 /// [allowedOrigins] に含まれるオリジンからのリクエストにだけ CORS ヘッダを付ける。
 ///
-/// 許可するメソッドは GET のみ。許可外オリジンからのプリフライトは 403 を返す。
+/// 許可するメソッドは GET, PATCH、許可するヘッダは Content-Type。
+/// 許可外オリジンからのプリフライトは 403 を返す。
 /// 許可外オリジンや Origin の無い通常のリクエストは、そのまま内側のハンドラに渡す
 /// （ブロックするのはブラウザ側）。
 Middleware corsMiddleware({required Set<String> allowedOrigins}) {
@@ -21,7 +22,8 @@ Middleware corsMiddleware({required Set<String> allowedOrigins}) {
           204,
           headers: {
             'access-control-allow-origin': origin,
-            'access-control-allow-methods': 'GET',
+            'access-control-allow-methods': 'GET, PATCH',
+            'access-control-allow-headers': 'Content-Type',
             'vary': 'Origin',
           },
         );

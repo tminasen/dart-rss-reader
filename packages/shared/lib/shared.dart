@@ -1,4 +1,5 @@
 export 'src/article.dart';
+export 'src/article_item.dart';
 export 'src/feed.dart';
 export 'src/feed_summary.dart';
 export 'src/rss/rss_parse_exception.dart';
