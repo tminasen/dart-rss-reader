@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show TlsException;
+import 'dart:isolate';
 
 import 'package:http/http.dart' as http;
 import 'package:shared/shared.dart';
@@ -72,8 +73,9 @@ final class FeedClient {
       );
     }
     final RssParseResult parsed;
+    final bytes = response.bodyBytes;
     try {
-      parsed = parseRss(utf8.decode(response.bodyBytes));
+      parsed = await Isolate.run(() => parseRss(utf8.decode(bytes)));
     } on FormatException catch (e) {
       throw FeedParseException(
         'Response body is not valid UTF-8: ${e.message}',

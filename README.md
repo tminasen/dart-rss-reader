@@ -52,7 +52,21 @@ jaspr serve --dart-define=API_BASE_URL=http://localhost:9000
 ```
 
 - `jaspr serve` は標準入力が端末でないと止まります。バックグラウンドで動かすときは、標準入力を開いたままにしてください（例: `sleep 600 | script -q /dev/null jaspr serve`）。
-- server は起動時に記事を取得しないため、画面には「タイトル未取得」「最終取得 未取得 ・ 全0件」と表示されます。
+- server は起動直後と、その後は一定間隔でフィードを巡回して記事を保存します。取得できるまでの間は、画面に「タイトル未取得」「最終取得 未取得 ・ 全0件」と表示されます。
+- server は次の環境変数で設定を変えられます（空文字は未指定として扱います）。
+
+| 環境変数 | 既定値 | 説明 |
+| --- | --- | --- |
+| `FEED_URL` | `https://tminasen.dev/rss/feed.xml` | 購読して巡回するフィードの URL（http / https） |
+| `CRAWL_INTERVAL_MINUTES` | `30` | 巡回の間隔（正の整数・分） |
+| `REPOSITORY` | `sqlite` | 保存先（`memory` / `sqlite`） |
+| `DATABASE_PATH` | `data/rss_reader.db` | `REPOSITORY=sqlite` のときの DB ファイル |
+
+```sh
+FEED_URL=https://example.com/feed.xml CRAWL_INTERVAL_MINUTES=10 dart run bin/server.dart
+```
+
+- `FEED_URL` を変えても、以前の URL の購読は DB に残りますが、巡回するのは現在の `FEED_URL` だけです。
 
 ## テスト
 

@@ -24,7 +24,7 @@ void main() {
       );
 
       // When: 組み立てる
-      final repositories = await openRepositories(config);
+      final repositories = await openRepositories(config, feedUrl: feedUrlA);
       addTearDown(repositories.close);
       final all = await repositories.subscriptions.findAll();
 
@@ -48,7 +48,7 @@ void main() {
       );
 
       // When: 組み立てる
-      final repositories = await openRepositories(config);
+      final repositories = await openRepositories(config, feedUrl: feedUrlA);
       final all = await repositories.subscriptions.findAll();
       repositories.close();
 
@@ -69,7 +69,7 @@ void main() {
         kind: RepositoryKind.sqlite,
         databasePath: tempDbPath(),
       );
-      final first = await openRepositories(config);
+      final first = await openRepositories(config, feedUrl: feedUrlA);
       final s = (await first.subscriptions.findAll()).single;
       await first.subscriptions.updateFetched(
         s.id,
@@ -80,7 +80,7 @@ void main() {
       first.close();
 
       // When: 同じ設定でもう一度組み立てる（再起動）
-      final second = await openRepositories(config);
+      final second = await openRepositories(config, feedUrl: feedUrlA);
       addTearDown(second.close);
       final subscriptions = await second.subscriptions.findAll();
       final articles = await second.articles.find();
@@ -97,6 +97,25 @@ void main() {
       expect(articles, hasLength(1));
       expect(articles.single.article, rss(1));
       expect(articles.single.feedId, s.id);
+    });
+
+    test('should add the new URL and keep the old one '
+        'when reopened with a different feed URL', () async {
+      // Given: feedUrlA で開いて閉じた sqlite の設定
+      final config = RepositoryConfig(
+        kind: RepositoryKind.sqlite,
+        databasePath: tempDbPath(),
+      );
+      final first = await openRepositories(config, feedUrl: feedUrlA);
+      first.close();
+
+      // When: feedUrlB でもう一度組み立てる
+      final second = await openRepositories(config, feedUrl: feedUrlB);
+      addTearDown(second.close);
+      final subscriptions = await second.subscriptions.findAll();
+
+      // Then: 旧URLが残り、新URLが登録順で追加されている
+      expect([for (final s in subscriptions) s.feedUrl], [feedUrlA, feedUrlB]);
     });
   });
 }

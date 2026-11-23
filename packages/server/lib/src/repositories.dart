@@ -24,13 +24,18 @@ final class Repositories {
   final void Function() close;
 }
 
-/// [config] に従ってリポジトリを組み立て、既定の購読を登録する。
+/// [config] に従ってリポジトリを組み立て、[feedUrl] の購読を登録する。
 /// sqlite のときは DB の親ディレクトリを作り、マイグレーションを当てる。
-Future<Repositories> openRepositories(RepositoryConfig config) async {
+Future<Repositories> openRepositories(
+  RepositoryConfig config, {
+  required String feedUrl,
+}) async {
   switch (config.kind) {
     case RepositoryKind.memory:
       return Repositories(
-        subscriptions: await createDefaultSubscriptionRepository(),
+        subscriptions: await createDefaultSubscriptionRepository(
+          feedUrl: feedUrl,
+        ),
         articles: InMemoryArticleRepository(),
         close: () {},
       );
@@ -42,6 +47,7 @@ Future<Repositories> openRepositories(RepositoryConfig config) async {
       return Repositories(
         subscriptions: await createDefaultSubscriptionRepository(
           repository: SqliteSubscriptionRepository(db),
+          feedUrl: feedUrl,
         ),
         articles: SqliteArticleRepository(db),
         close: db.close,
