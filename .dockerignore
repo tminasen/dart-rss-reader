@@ -1,0 +1,7 @@
+.git
+.github
+.DS_Store
+**/.DS_Store
+**/.dart_tool
+**/build
+packages/server/data
